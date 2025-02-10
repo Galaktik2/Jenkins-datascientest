@@ -8,18 +8,18 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-                sh 'pip install -r requirements.txt'
+                bat 'pip install -r requirements.txt'
           }
         }
         stage('Testing') {
           steps {
-                sh 'python -m unittest'
+                bat 'python -m unittest'
           }
         }
           stage('Deploying') {
           steps{
             script {
-              sh '''
+              bat '''
               docker rm -f jenkins
               docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
               docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
@@ -42,8 +42,8 @@ pipeline {
                       DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
                   }
                   steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                      sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+                bat 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                      bat 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
                   }
                 }
             stage('Merging') {
@@ -56,7 +56,7 @@ pipeline {
     }
     post {
       always {
-        sh 'docker logout'
+        bat 'docker logout'
       }
     }
 }
